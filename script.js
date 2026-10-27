@@ -416,10 +416,13 @@ function finishMemory(timedOut) {
 }
 
 /* ============================================================
-   8. FORMULARIO DE CONTACTO (aún sin envío real: etapa 5)
+   8. FORMULARIO DE CONTACTO Y ENVÍO A GOOGLE SHEETS
    ============================================================ */
 
-$("contact-channel").addEventListener("change", () => { $("contact-handle").value = ""; updateContactLabel(); });
+$("contact-channel").addEventListener("change", () => { 
+  $("contact-handle").value = ""; 
+  updateContactLabel(); 
+});
 
 function updateContactLabel() {
   const labels = {
@@ -435,11 +438,61 @@ function updateContactLabel() {
 }
 updateContactLabel();
 
+// URL de tu API de Google Apps Script
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxDdWMazd-uO7hd0pCtntyuWBEgLpBv26iC1_jRuDgNrTQml0rJ2TTgOVpij20YW9QlzA/exec";
+
+// Manejador del evento Submit del Formulario
 $("contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
-  // En esta versión NO se envían ni almacenan datos fuera del navegador.
-  $("contact-status").textContent = "¡Formulario validado! Aún no se ha enviado ni guardado ningún dato (modo de prueba).";
-  $("contact-status").className = "feedback good";
+
+  const statusEl = $("contact-status");
+  statusEl.textContent = "Guardando tus datos...";
+  statusEl.className = "feedback";
+
+  // Captura los valores de los inputs de tu HTML
+  const nombre = $("contact-name") ? $("contact-name").value : "";
+  const carrera = $("contact-career") ? $("contact-career").value : "";
+  const ciclo = $("contact-cycle") ? $("contact-cycle").value : "";
+  const contacto = $("contact-handle") ? $("contact-handle").value : "";
+
+  // Deshabilitar botón mientras se envía
+  const submitBtn = $("contact-form").querySelector("button[type='submit']");
+  if (submitBtn) submitBtn.disabled = true;
+
+  // Preparar datos para Google Apps Script
+  const formData = new URLSearchParams();
+  formData.append("nombre", nombre);
+  formData.append("carrera", carrera);
+  formData.append("ciclo", ciclo);
+  formData.append("contacto", contacto);
+
+  // Petición a Google Sheets usando no-cors para asegurar que llegue sin bloqueos de red
+  fetch(URL_APPS_SCRIPT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: formData
+  })
+  .then(() => {
+    statusEl.textContent = "¡Datos guardados con éxito!";
+    statusEl.className = "feedback good";
+    if (submitBtn) submitBtn.disabled = false;
+    
+    // Cambiar a la pantalla de agradecimiento después de 1.5 segundos
+    setTimeout(() => {
+      stopAllTimers();
+      phase = "done";
+      showScreen("screen-thanks");
+    }, 1500);
+  })
+  .catch(error => {
+    console.error("Hubo un error al guardar los datos:", error);
+    statusEl.textContent = "Hubo un error al guardar tus datos. Inténtalo de nuevo.";
+    statusEl.className = "feedback bad";
+    if (submitBtn) submitBtn.disabled = false;
+  });
 });
 
 /* ============================================================
@@ -454,28 +507,3 @@ function renderMute(muted) {
 Sound.onMuteChange(renderMute);
 renderMute(Sound.isMuted());
 muteButton.addEventListener("click", () => Sound.toggleMute());
-
-
-/* RECIBIR PARAMETROS A GOOGLE SHEETS */
-const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxDdWMazd-uO7hd0pCtntyuWBEgLpBv26iC1_jRuDgNrTQml0rJ2TTgOVpij20YW9QlzA/exec";
-
-function guardarDatosJugador(nombre, carrera, ciclo, contacto) {
-  const formData = new URLSearchParams();
-  formData.append("nombre", nombre);
-  formData.append("carrera", carrera);
-  formData.append("ciclo", ciclo);
-  formData.append("contacto", contacto);
-
-  fetch(URL_APPS_SCRIPT, {
-    method: "POST",
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("¡Datos guardados con éxito en Google Sheets!", data);
-    // Aquí puedes mostrar tu mensaje de éxito o cambiar de pantalla en el juego
-  })
-  .catch(error => {
-    console.error("Hubo un error al guardar los datos:", error);
-  });
-}
