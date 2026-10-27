@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#c7115c">
+  <meta name="description" content="Un reto de memoria: ¿qué tan ágil es tu mente? 8 preguntas, 13 números y 20 segundos.">
+  <title>VÉRTICE | La aventura de los 13 números</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="audio.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-screen="screen-start">
+  <noscript>Este juego necesita JavaScript activado para funcionar.</noscript>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <!-- Si el logo carga, se ve el logo. Si falla, se muestra la "V" de respaldo. -->
+        <img id="brand-logo" src="img/logo.png" alt="Logo de Vértice" width="46" height="46"
+             onerror="this.hidden=true; document.getElementById('logo-fallback').hidden=false;">
+        <div id="logo-fallback" class="logo-fallback" aria-label="Vértice" hidden>V</div>
+        <div class="brand-copy">
+          <span class="eyebrow">VÉRTICE</span>
+          <span class="brand-name">La aventura de los 13 números</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="pill">RETO EXPRESS</span>
+        <button id="mute-button" class="icon-button" type="button" aria-pressed="false" aria-label="Silenciar música y sonidos">🔊</button>
+      </div>
+    </header>
+
+    <section id="screen-start" class="screen active">
+      <div class="hero">
+        <div class="hero-sticker">¿Qué tan ágil es tu mente? ⚡</div>
+        <h1>La aventura de<br><span>los 13 números</span></h1>
+        <p class="lead">Responde preguntas con humor universitario, fíjate bien en las respuestas y demuestra al final cuánto recuerdas.</p>
+        <div class="hero-art" aria-hidden="true">
+          <span class="floating-number n1">59</span>
+          <span class="floating-number n2">14</span>
+          <span class="floating-number n3">75</span>
+          <span class="spark">✦</span>
+          <div class="memory-card"><span>RETO</span><strong>13</strong><small>números por recordar</small></div>
+        </div>
+        <button id="start-button" class="button button-primary">¡Vamos al reto! <span>→</span></button>
+        <p class="microcopy">8 preguntas · 15 segundos cada una · un desafío final de memoria</p>
+      </div>
+    </section>
+
+    <section id="screen-warning" class="screen">
+      <div class="section-icon">🧠</div>
+      <p class="eyebrow">ANTES DE EMPEZAR</p>
+      <h2>Ojo con los números 👀</h2>
+      <p class="lead">Cada pregunta tiene 4 respuestas. <strong>Fíjate en los números de las respuestas</strong>, no solo en la correcta: al final tendrás 20 segundos para marcar los 13 que viste.</p>
+      <div class="notice"><strong>Consejo:</strong> cuidado con las trampas, hay números que nunca aparecieron. ¡La memoria también tiene parciales!</div>
+      <button id="warning-button" class="button button-primary">Entendido, ¡dale! <span>→</span></button>
+    </section>
+
+    <section id="screen-question" class="screen">
+      <div class="progress-row">
+        <span id="question-counter">PREGUNTA 1 DE 5</span>
+        <span id="question-timer-box" class="timer"><span aria-hidden="true">⏱</span> <strong id="question-timer">15</strong>s</span>
+      </div>
+      <div class="progress-track"><div id="question-progress" class="progress-fill"></div></div>
+      <div class="question-card">
+        <span id="question-category" class="category-label">VIDA UNIVERSITARIA</span>
+        <h2 id="question-title">Pregunta</h2>
+        <span id="score-pop" class="score-pop" aria-hidden="true"></span>
+      </div>
+      <div id="question-options" class="options" role="group" aria-label="Respuestas"></div>
+      <div class="reveal">
+        <p id="question-feedback" class="feedback" aria-live="polite"></p>
+        <button id="next-question-button" class="button button-primary hidden">Siguiente <span>→</span></button>
+      </div>
+    </section>
+
+    <section id="screen-memory" class="screen">
+      <div class="progress-row">
+        <span>DESAFÍO FINAL</span>
+        <span id="memory-timer-box" class="timer"><span aria-hidden="true">⏱</span> <strong id="memory-timer">20</strong>s</span>
+      </div>
+      <div class="progress-track"><div id="memory-progress" class="progress-fill"></div></div>
+      <h2>¿Qué números viste?</h2>
+      <p class="lead">Marca los <strong>13 números</strong> que aparecieron como respuestas. Hay <strong>7 trampas</strong>.</p>
+      <div id="memory-options" class="memory-grid" role="group" aria-label="Números para marcar"></div>
+      <p id="memory-count" class="memory-count" aria-live="polite">0 marcados · buscas 13</p>
+      <button id="submit-memory-button" class="button button-primary">¡Comprobar memoria! <span>→</span></button>
+      <p class="microcopy">Cada acierto suma. Cada trampa resta el doble.</p>
+    </section>
+
+    <section id="screen-result" class="screen">
+      <div class="result-emoji" id="result-emoji">🏆</div>
+      <p class="eyebrow">RETO COMPLETADO</p>
+      <h2 id="result-title">¡Lo lograste!</h2>
+      <div class="score-panel">
+        <span>Tu puntaje</span>
+        <strong id="final-score">0 <small>/ 100</small></strong>
+        <p id="result-message">Buen trabajo.</p>
+        <p id="result-breakdown" class="breakdown"></p>
+      </div>
+      <p class="lead">¿Quieres que el chisme continúe? Puedes dejar tu contacto para recibir novedades de Vértice. Es totalmente opcional.</p>
+      <button id="contact-button" class="button button-primary">Quiero seguir en contacto <span>→</span></button>
+      <button id="skip-contact-button" class="button button-secondary">Paso, solo quería jugar</button>
+      <button id="replay-button" class="text-button">Volver a jugar</button>
+    </section>
+
+    <section id="screen-contact" class="screen">
+      <p class="eyebrow">SIGAMOS EN CONTACTO</p>
+      <h2>El chisme continúa 👀</h2>
+      <p class="lead">Déjanos tus datos si quieres recibir novedades de Vértice. No necesitas registrarte para jugar ni para ver tu resultado.</p>
+      <form id="contact-form">
+        <label for="contact-name">¿Cómo te llamas?</label>
+        <input id="contact-name" name="name" autocomplete="name" required maxlength="80" placeholder="Tu nombre">
+
+        <label for="contact-career">¿Qué carrera estudias?</label>
+        <input id="contact-career" name="career" required maxlength="100" placeholder="Ej. Ingeniería de Telecomunicaciones">
+
+        <label for="contact-cycle">¿En qué ciclo estás?</label>
+        <select id="contact-cycle" name="cycle" required>
+          <option value="">Selecciona tu ciclo</option>
+          <option>1.er ciclo</option><option>2.º ciclo</option><option>3.er ciclo</option>
+          <option>4.º ciclo</option><option>5.º ciclo</option><option>6.º ciclo</option>
+          <option>7.º ciclo</option><option>8.º ciclo</option><option>9.º ciclo</option>
+          <option>10.º ciclo</option><option>Otro / Estudios generales</option>
+        </select>
+
+        <label for="contact-channel">¿Por dónde prefieres que te contactemos?</label>
+        <select id="contact-channel" name="channel" required>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Correo">Correo electrónico</option>
+        </select>
+
+        <label id="contact-handle-label" for="contact-handle">Tu número de WhatsApp</label>
+        <input id="contact-handle" name="contact" required maxlength="120" placeholder="Ej. 999 999 999">
+
+        <label class="consent-row">
+          <input id="contact-consent" name="consent" type="checkbox" required>
+          <span>Acepto que Vértice use estos datos para contactarme y enviarme novedades. Es opcional y puedo jugar sin registrarme.</span>
+        </label>
+        <button class="button button-primary" type="submit">Enviar mis datos <span>→</span></button>
+      </form>
+      <p id="contact-status" class="feedback" aria-live="polite"></p>
+      <button id="back-result-button" class="text-button">Volver al resultado</button>
+    </section>
+
+    <section id="screen-thanks" class="screen">
+      <div class="result-emoji">💜</div>
+      <h2>¡Gracias por jugar!</h2>
+      <p class="lead">Tu participación ya hizo su parte. ¡Que siga la aventura!</p>
+      <button id="thanks-replay-button" class="button button-primary">Jugar otra vez <span>↻</span></button>
+    </section>
+
+    <footer class="footer">
+      <span>Una experiencia de VÉRTICE</span>
+      <span>Hecho para jugar ✦</span>
+    </footer>
+  </main>
+</body>
+</html>
