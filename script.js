@@ -439,7 +439,7 @@ function updateContactLabel() {
 updateContactLabel();
 
 // URL de tu API de Google Apps Script
-const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxDdWMazd-uO7hd0pCtntyuWBEgLpBv26iC1_jRuDgNrTQml0rJ2TTgOVpij20YW9QlzA/exec";
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxHJ0dU9QUAHE8P8tcWyRnrcXsdMGKd6PG7-iIPwo_NacRY9YKU7OytJQIoweCAlvQFjQ/exec";
 
 $("contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
