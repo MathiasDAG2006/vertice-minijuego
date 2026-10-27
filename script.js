@@ -454,3 +454,28 @@ function renderMute(muted) {
 Sound.onMuteChange(renderMute);
 renderMute(Sound.isMuted());
 muteButton.addEventListener("click", () => Sound.toggleMute());
+
+
+/* RECIBIR PARAMETROS A GOOGLE SHEETS */
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxDdWMazd-uO7hd0pCtntyuWBEgLpBv26iC1_jRuDgNrTQml0rJ2TTgOVpij20YW9QlzA/exec";
+
+function guardarDatosJugador(nombre, carrera, ciclo, contacto) {
+  const formData = new URLSearchParams();
+  formData.append("nombre", nombre);
+  formData.append("carrera", carrera);
+  formData.append("ciclo", ciclo);
+  formData.append("contacto", contacto);
+
+  fetch(URL_APPS_SCRIPT, {
+    method: "POST",
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("¡Datos guardados con éxito en Google Sheets!", data);
+    // Aquí puedes mostrar tu mensaje de éxito o cambiar de pantalla en el juego
+  })
+  .catch(error => {
+    console.error("Hubo un error al guardar los datos:", error);
+  });
+}
