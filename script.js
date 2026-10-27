@@ -441,7 +441,6 @@ updateContactLabel();
 // URL de tu API de Google Apps Script
 const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxDdWMazd-uO7hd0pCtntyuWBEgLpBv26iC1_jRuDgNrTQml0rJ2TTgOVpij20YW9QlzA/exec";
 
-// Manejador del evento Submit del Formulario
 $("contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -449,30 +448,25 @@ $("contact-form").addEventListener("submit", (event) => {
   statusEl.textContent = "Guardando tus datos...";
   statusEl.className = "feedback";
 
-  // Captura los valores de los inputs de tu HTML
-  const nombre = $("contact-name") ? $("contact-name").value : "";
-  const carrera = $("contact-career") ? $("contact-career").value : "";
-  const ciclo = $("contact-cycle") ? $("contact-cycle").value : "";
-  const contacto = $("contact-handle") ? $("contact-handle").value : "";
+  // Capturar los valores exactos de tus inputs del HTML
+  const nombre = $("contact-name").value;
+  const carrera = $("contact-career").value;
+  const ciclo = $("current-cycle") ? $("current-cycle").value : $("contact-cycle").value;
+  const contacto = $("contact-handle").value;
 
-  // Deshabilitar botón mientras se envía
   const submitBtn = $("contact-form").querySelector("button[type='submit']");
   if (submitBtn) submitBtn.disabled = true;
 
-  // Preparar datos para Google Apps Script
   const formData = new URLSearchParams();
   formData.append("nombre", nombre);
   formData.append("carrera", carrera);
   formData.append("ciclo", ciclo);
   formData.append("contacto", contacto);
 
-  // Petición a Google Sheets usando no-cors para asegurar que llegue sin bloqueos de red
+  // Petición POST con no-cors para evitar bloqueos del navegador
   fetch(URL_APPS_SCRIPT, {
     method: "POST",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
     body: formData
   })
   .then(() => {
@@ -488,7 +482,7 @@ $("contact-form").addEventListener("submit", (event) => {
     }, 1500);
   })
   .catch(error => {
-    console.error("Hubo un error al guardar los datos:", error);
+    console.error("Error al guardar:", error);
     statusEl.textContent = "Hubo un error al guardar tus datos. Inténtalo de nuevo.";
     statusEl.className = "feedback bad";
     if (submitBtn) submitBtn.disabled = false;
